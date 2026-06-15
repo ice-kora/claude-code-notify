@@ -12,19 +12,11 @@ Add-Type -AssemblyName System.Drawing
 $configPath = Join-Path $env:USERPROFILE '.claude\notify-config.json'
 $theme = "holo"
 $radius = 14
-$iconProj = "⚙"
-$iconDone = "✨"
-$iconWait = "⚙"
-$iconSession = "💬"
 if (Test-Path $configPath) {
     try {
         $cfg = Get-Content $configPath -Encoding UTF8 | ConvertFrom-Json
         if ($cfg.theme) { $theme = $cfg.theme }
         if ($cfg.params.radius) { $radius = [int]$cfg.params.radius }
-        if ($cfg.icons.project) { $iconProj = $cfg.icons.project }
-        if ($cfg.icons.done) { $iconDone = $cfg.icons.done }
-        if ($cfg.icons.wait) { $iconWait = $cfg.icons.wait }
-        if ($cfg.icons.session) { $iconSession = $cfg.icons.session }
     } catch {}
 }
 
@@ -87,39 +79,57 @@ $form.Add_Paint({
 
     $x0 = 114; $y0 = 20
 
-    # == 一级标题：项目名 ==
-    $projName = if ($ProjectName) { $ProjectName } else { "Claude Code" }
-    $h1Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
-    [System.Windows.Forms.TextRenderer]::DrawText($g, $projName, $h1Font,
-        [System.Drawing.Point]::new($x0, $y0), $t.titleColor)
+    $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
 
-    # == 二级标题：会话名 ==
+    # == 一级标题：项目名图标 + 文字 ==
+    $projName = if ($ProjectName) { $ProjectName } else { "Claude Code" }
+    # 图标圆角背景
+    $gearBgBrush = New-Object System.Drawing.SolidBrush($t.iconBg)
+    $gearBgPath = New-Object System.Drawing.Drawing2D.GraphicsPath
+    $gr = 4; $gbx = $x0; $gby = ($y0+4); $gw = 22; $gh = 22
+    $gearBgPath.AddArc($gbx, $gby, $gr*2, $gr*2, 180, 90)
+    $gearBgPath.AddArc($gbx+$gw-$gr*2, $gby, $gr*2, $gr*2, 270, 90)
+    $gearBgPath.AddArc($gbx+$gw-$gr*2, $gby+$gh-$gr*2, $gr*2, $gr*2, 0, 90)
+    $gearBgPath.AddArc($gbx, $gby+$gh-$gr*2, $gr*2, $gr*2, 90, 90)
+    $gearBgPath.CloseFigure()
+    $g.FillPath($gearBgBrush, $gearBgPath)
+    $gp = Join-Path $env:USERPROFILE '.claude\themes\icons\gear.png'; if (Test-Path $gp) { $gi = [System.Drawing.Image]::FromFile($gp); $g.DrawImage($gi, ($x0+2), ($y0+6), 18, 18); $gi.Dispose() }
+    $h1Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
+    $h1X = $x0 + 22 + 8
+    [System.Windows.Forms.TextRenderer]::DrawText($g, $projName, $h1Font,
+        [System.Drawing.Point]::new($h1X, $y0), $t.titleColor)
+
+    # == 二级标题：会话名图标 + 文字 ==
     $sessY = $y0 + 34
     if ($SessionName) {
+        $chp = Join-Path $env:USERPROFILE '.claude\themes\icons\chat.png'; if (Test-Path $chp) { $ci = [System.Drawing.Image]::FromFile($chp); $g.DrawImage($ci, $x0, $sessY+2, 16, 16); $ci.Dispose() }
         $h2Font = New-Object System.Drawing.Font("Segoe UI", 10)
-        [System.Windows.Forms.TextRenderer]::DrawText($g, "$iconSession $SessionName", $h2Font,
-            [System.Drawing.Point]::new($x0, $sessY), $t.metaColor)
+        $h2X = $x0 + 16 + 4
+        [System.Windows.Forms.TextRenderer]::DrawText($g, $SessionName, $h2Font,
+            [System.Drawing.Point]::new($h2X, $sessY), $t.metaColor)
     }
 
     # == 分割线 ==
     $divY = $sessY + 22
-    $divPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(60,$t.bd.R,$t.bd.G,$t.bd.B))
+    $divPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(120,$t.bd.R,$t.bd.G,$t.bd.B))
     $g.DrawLine($divPen, $x0, $divY, ($fw2-16), $divY)
 
     # == 内容 ==
     $bodyFont = New-Object System.Drawing.Font("Segoe UI", 11)
     $isStop = ($Event -eq 'stop')
     if ($isStop) {
-        $bodyText = if ($Context) { "$iconDone 搞定了：$Context" } else { "$iconDone 搞定了~" }
+        $bodyText = if ($Context) { "搞定了：$Context" } else { "搞定了~" }
+        $ckp = Join-Path $env:USERPROFILE '.claude\themes\icons\check.png'; if (Test-Path $ckp) { $di = [System.Drawing.Image]::FromFile($ckp); $g.DrawImage($di, $x0, ($divY + 12), 16, 16); $di.Dispose() }
     } else {
-        $bodyText = if ($Context) { "$iconWait $Context" } else { "$iconWait 需要你瞅一眼" }
+        $bodyText = if ($Context) { "$Context" } else { "需要你瞅一眼" }
+        $blp = Join-Path $env:USERPROFILE '.claude\themes\icons\bell.png'; if (Test-Path $blp) { $bi = [System.Drawing.Image]::FromFile($blp); $g.DrawImage($bi, $x0, ($divY + 10), 16, 16); $bi.Dispose() }
     }
-    $bodyRect = New-Object System.Drawing.Rectangle($x0, ($divY + 10), ($fw2 - $x0 - 16), ($fh2 - ($divY + 10) - 50))
+    $bodyRect = New-Object System.Drawing.Rectangle(($x0 + 20), ($divY + 10), ($fw2 - $x0 - 36), ($fh2 - ($divY + 10) - 50))
     $bodyFlags = [System.Windows.Forms.TextFormatFlags]::WordBreak -bor [System.Windows.Forms.TextFormatFlags]::EndEllipsis
     [System.Windows.Forms.TextRenderer]::DrawText($g, $bodyText, $bodyFont, $bodyRect, $t.bodyColor, $bodyFlags)
 
     # == 关闭按钮（固定在右下角） ==
-    $subFont = New-Object System.Drawing.Font("Segoe UI", 10)
+    $subFont = New-Object System.Drawing.Font("Segoe UI Emoji", 10)
     if (-not $SessionName) { $metaBrush = New-Object System.Drawing.SolidBrush($t.metaColor) }
     $btnW = 80; $btnH = 28
     $btnRect = New-Object System.Drawing.Rectangle(($fw2 - $btnW - 16), ($fh2 - $btnH - 14), $btnW, $btnH)

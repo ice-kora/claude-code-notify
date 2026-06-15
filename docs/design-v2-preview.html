@@ -27,7 +27,7 @@
 
   /* 优雅弹窗卡片 */
   .toast-card {
-    width: 380px; border-radius: 14px; overflow: hidden; display: flex;
+    width: 380px; height: 220px; border-radius: 14px; overflow: hidden; display: flex;
     box-shadow: 0 8px 40px rgba(0,0,0,0.6);
     animation: slideIn 0.5s cubic-bezier(0.16,1,0.3,1);
   }
@@ -202,14 +202,13 @@
       </div>
       <div class="content-area">
         <div class="card-header">
-          <div class="icon"><span id="elegantProjIcon">⚙</span></div>
-          <span class="title" style="margin-bottom:6px;display:inline-block;">claude-code-notify</span>
-          <span class="close">×</span>
+          <div class="icon"><img src="../hooks/themes/icons/gear.png" width="18" height="18" style="vertical-align:middle;"></div>
+          <span class="title" style="margin-bottom:6px;display:inline-block;position:relative;top:-2px;">claude-code-notify</span>
         </div>
-        <div class="card-meta"><span id="elegantMetaIcon">💬</span> 重构代码</div>
+        <div class="card-meta"><img src="../hooks/themes/icons/chat.png" width="14" height="14" style="vertical-align:middle;margin-right:4px;"> 重构代码</div>
         <div class="card-divider"></div>
         <div class="card-body">
-          <div class="main-text"><span id="elegantDoneIcon">✨</span> 搞定了：把所有 .ts 文件重构为 .js</div>
+          <div class="main-text"><img src="../hooks/themes/icons/check.png" width="16" height="16" style="vertical-align:middle;margin-right:4px;"> 搞定了：把所有 .ts 文件重构为 .js</div>
         </div>
         <div class="card-footer">
           <div class="btn">忽略</div>
@@ -233,13 +232,6 @@
       <h4>🎨 优雅弹窗</h4>
       <div class="label-sm">主题</div>
       <div class="theme-row" id="themeGrid"></div>
-      <div class="label-sm" style="margin-top:8px;">图标</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <div><div class="emoji-row" id="elegantIconGrid1"></div><div style="font-size:10px;color:#6a6a88;margin-top:2px;">项目名</div></div>
-        <div><div class="emoji-row" id="elegantIconGrid2"></div><div style="font-size:10px;color:#6a6a88;margin-top:2px;">完成</div></div>
-        <div><div class="emoji-row" id="elegantIconGrid3"></div><div style="font-size:10px;color:#6a6a88;margin-top:2px;">等待</div></div>
-        <div><div class="emoji-row" id="elegantIconGrid4"></div><div style="font-size:10px;color:#6a6a88;margin-top:2px;">会话名</div></div>
-      </div>
       <div class="label-sm" style="margin-top:8px;">参数</div>
       <div class="param-row">
         <label>圆角</label><input type="range" min="4" max="28" value="14" id="er"><span class="val" id="erV">14</span>
@@ -346,12 +338,7 @@ function updE(){
   card.querySelector('.card-body').style.color=t.body;
   card.querySelector('.btn').style.color=t.ghost;
   card.querySelector('.btn').style.borderColor=t.ghostBd;
-  card.querySelector('.close').style.color=t.close;
   g('charStrip').style.background=t.stripBg;
-  g('elegantProjIcon').textContent=ei.p;
-  g('elegantDoneIcon').textContent=ei.d;
-  g('elegantWaitIcon').textContent=ei.w;
-  g('elegantMetaIcon').textContent=ei.s;
 }
 
 function handleUpload(ev){
@@ -378,7 +365,7 @@ function removeUpload(){
 }
 
 function saveConfig(){
-  const cfg={mode,theme,icons:mode==='sys'?{project:si.p,status:si.s}:{project:ei.p,done:ei.d,wait:ei.w,session:ei.s},params:{radius:g('er').value,duration:g('ed').value,height:g('eh').value},hasImage:!!uploaded};
+  const cfg={mode,theme,params:{radius:g('er').value,duration:g('ed').value,height:g('eh').value},hasImage:!!uploaded};
   if(uploaded){cfg.imageData=uploaded.data;}
   const h=g('saveHint');
   h.textContent='⏳ 保存中...';h.style.color='#fbbf24';
@@ -399,10 +386,6 @@ g('ed').oninput=()=>{g('edV').textContent=g('ed').value+'s';};
 
 buildGrid('iconGrid1',TP,si.p,x=>{si.p=x;g('sysIcon1').textContent=x;});
 buildGrid('iconGrid2',TS,si.s,x=>{si.s=x;g('sysIcon2').textContent=x;});
-buildGrid('elegantIconGrid1',TP,ei.p,x=>{ei.p=x;updE();});
-buildGrid('elegantIconGrid2',TS,ei.d,x=>{ei.d=x;updE();});
-buildGrid('elegantIconGrid3',TW,ei.w,x=>{ei.w=x;updE();});
-buildGrid('elegantIconGrid4',TW,ei.s,x=>{ei.s=x;updE();});
 buildTheme();updE();
 g('elegantToast').style.height='220px';g('charStrip').style.height='220px';
 </script>
