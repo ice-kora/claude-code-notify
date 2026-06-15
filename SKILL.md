@@ -1,22 +1,29 @@
 ---
-name: notify-setup
+name: claude-notify
 description: >
-  [中文] 一键配置 Claude Code 桌面通知。支持系统原生弹窗和自定义 WinForms 优雅弹窗，5 种主题，二次元立绘，网页可视化配置。
-  [English] One-click setup for Claude Code desktop notifications. System toast + custom WinForms elegant popup with 5 themes, anime character art, and web-based visual configurator.
+  Claude Code desktop notification skill.
+  Supports Windows Toast notifications,
+  macOS Notification Center,
+  and custom WinForms elegant popups with themes,
+  anime characters and web visual configurator.
 license: MIT
 compatibility: Windows 10/11 (Toast notification) + macOS (Notification Center)
 metadata:
   author: qyzxcswbll
   version: "2.0.0"
   tags:
+    - claude
+    - claude-code
     - notify
     - notification
-    - desktop
+    - desktop-notification
+    - popup
+    - toast
     - windows
     - macos
-    - toast
-    - alert
     - hook
+    - productivity
+    - winforms
   agents:
     - claude-code
 ---
