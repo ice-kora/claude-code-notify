@@ -1,31 +1,27 @@
 ---
 name: claude-notify
+
 description: >
-  Claude Code desktop notification skill.
-  Supports Windows Toast notifications,
-  macOS Notification Center,
-  and custom WinForms elegant popups with themes,
-  anime characters and web visual configurator.
-license: MIT
-compatibility: Windows 10/11 (Toast notification) + macOS (Notification Center)
+  Desktop notifications for Claude Code.
+  Support Windows Toast and macOS Notification Center.
+  Popup notification when Claude Code finishes tasks
+  or requires user input.
+
 metadata:
   author: qyzxcswbll
-  version: "2.0.0"
+  version: "2.0.2"
+
   tags:
     - claude
     - claude-code
-    - notify
     - notification
-    - desktop-notification
-    - popup
+    - notify
     - toast
+    - popup
+    - desktop
     - windows
     - macos
-    - hook
-    - productivity
-    - winforms
-  agents:
-    - claude-code
+    - hooks
 ---
 
 # Claude Code Notify Setup
