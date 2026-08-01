@@ -127,6 +127,32 @@ npx skills add qyzxcswbll/claude-code-notify -g
 
 ---
 
+## 定制说明（本 fork）
+
+> 本分支是 **ice-kora** 的 fork 定制版，来源：[qyzxcswbll/claude-code-notify](https://github.com/qyzxcswbll/claude-code-notify)（master @ 2026-06-23，未改动上游其它文件）。
+
+### 修改内容
+
+| 文件 | 修改 |
+|------|------|
+| `hooks/notify-elegant.ps1` | 优雅弹窗（V2 / Windows）由 WinForms 自绘重写为 **WPF 渲染**，已提交上游 [PR #1](https://github.com/qyzxcswbll/claude-code-notify/pull/1) |
+
+### WPF 重写解决了什么
+
+原 WinForms 实现存在两个机制性视觉问题（Windows 11 + PowerShell 5.1 + 浅色主题下实测）：
+
+1. **圆角锯齿**：`$form.Region` 为位图级像素裁切，圆角弧线呈阶梯状锯齿；
+2. **TransparencyKey 紫红边**：尝试「透明键色 + 自绘圆角」方案时，抗锯齿边缘的半透明像素与品红键色混合，产生紫红描边（二值透明机制限制）。
+
+WPF 方案（每像素 alpha + `CornerRadius` + `DropShadowEffect`）实现抗锯齿圆角与真软阴影，功能、配置格式（`~/.claude/notify-config.json` 的 `theme`/`radius`/`duration`）、图标与立绘（`themes/character.png`）均兼容。
+
+### 附带调整
+
+- 主题字典改为 hex 色值（等价转换），原 5 个主题（holo / cyber / kawaii / dark / wa）全部保留；
+- 新增 **`furina` 主题**（珠光白→浅水蓝渐变，水神芙宁娜配色），设置 `notify-config.json` 的 `"theme": "furina"` 启用。
+
+---
+
 ## 许可证
 
 MIT
